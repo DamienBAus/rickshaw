@@ -1,0 +1,569 @@
+<!doctype html>
+<head>
+	<link type="text/css" rel="stylesheet" href="css/jquery-ui.css">
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+	<link type="text/css" rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link type="text/css" rel="stylesheet" href="css/jquery-ui.css">
+	<link type="text/css" rel="stylesheet" href="../src/css/graph.css">
+	<link type="text/css" rel="stylesheet" href="../src/css/detail.css">
+	<link type="text/css" rel="stylesheet" href="../src/css/legend.css">
+	<link type="text/css" rel="stylesheet" href="css/extensions.css?v=2">
+
+	<script src="../vendor/d3.v3.js"></script>
+
+	<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script-->
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<script>
+		jQuery.noConflict();
+	</script>
+
+	
+	<script src="js/jquery-ui.min.js"></script>
+	<script src="js/bootstrap.js"></script>
+
+	<script src="../src/js/Rickshaw.js"></script>
+	<script src="../src/js/Rickshaw.Class.js"></script>
+	<script src="../src/js/Rickshaw.Compat.ClassList.js"></script>
+	<script src="../src/js/Rickshaw.Graph.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Renderer.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Renderer.Area.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Renderer.Line.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Renderer.Bar.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Renderer.ScatterPlot.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Renderer.Stack.js"></script>
+	<script src="../src/js/Rickshaw.Graph.RangeSlider.js"></script>
+	<script src="../src/js/Rickshaw.Graph.RangeSlider.Preview.js"></script>
+	<script src="../src/js/Rickshaw.Graph.HoverDetail.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Annotate.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Legend.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Axis.Time.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Behavior.Series.Toggle.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Behavior.Series.Order.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Behavior.Series.Highlight.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Smoother.js"></script>
+	<script src="../src/js/Rickshaw.Fixtures.Time.js"></script>
+	<script src="../src/js/Rickshaw.Fixtures.Time.Local.js"></script>
+	<script src="../src/js/Rickshaw.Fixtures.Number.js"></script>
+	<script src="../src/js/Rickshaw.Fixtures.RandomData.js"></script>
+	<script src="../src/js/Rickshaw.Fixtures.Color.js"></script>
+	<script src="../src/js/Rickshaw.Color.Palette.js"></script>
+	<script src="../src/js/Rickshaw.Graph.Axis.Y.js"></script>
+
+	<script src="js/extensions.js"></script>
+</head>
+<body>
+
+<div id="content">
+<center><h1>Stress Levels of Millennium Falcon Employees</h1></center>
+	<form id="side_panel">
+		<h2>See Relevant Data</h2>
+		<div class="side-buttons" id="btnAll"><button type="button" class="btn btn-primary">See All Stress Levels</button></div>
+		<div class="side-buttons" id="btnDpt"><button type="button" class="btn btn-warning">View Departments</button></div>
+		<div class="side-buttons" id="btnWook"><button type="button" class="btn btn-success">View Wookies</button></div>
+		<div class="side-buttons" id="btnJedi"><button type="button" class="btn btn-success">View Jedis</button></div>
+		<div id="legend1"></div>
+		<div id="legend2"></div>
+		
+	</form>
+
+	<div id="chart_container">
+		<div id="individual-graphs-wook">
+			<h2>Damien</h2>
+			<div id="chart1"></div>
+			<div id="timeline1"></div>
+			<div id="preview1"></div>
+			<h2>Jumar</h2>
+			<div id="chart2"></div>
+			<div id="timeline2"></div>
+			<div id="preview2"></div>
+		</div>
+		<div id="individual-graphs-jedi">
+			<h2>Jeroen</h2>
+			<div id="chart3"></div>
+			<div id="timeline3"></div>
+			<div id="preview3"></div>
+			<h2>Anubhooti</h2>
+			<div id="chart4"></div>
+			<div id="timeline4"></div>
+			<div id="preview4"></div>
+		</div>
+		<div id="department-graphs">
+			<h2>The Wookies</h2>
+			<div id="chart5"></div>
+			<div id="timeline5"></div>
+			<div id="preview5"></div>
+			<h2>The Jedis</h2>
+			<div id="chart6"></div>
+			<div id="timeline6"></div>
+			<div id="preview6"></div>
+		</div>
+	</div>
+	
+	
+
+</div>
+
+<style>
+.ui-slider-horizontal, #legend1, #legend2, #btnAll, #department-graphs {
+	display:none;
+}
+
+.h1, h1 {font-size:40px;}
+.h2, h2 {font-size:20px;}
+
+.side-buttons button {
+	width:150px;
+	margin:7px;
+}
+</style>
+
+<script>
+
+// set up our data series with 150 random data points
+
+var seriesData = [ [], [], [], [], [], [], [], [], [] ];
+var random = new Rickshaw.Fixtures.RandomData(150);
+
+for (var i = 0; i < 150; i++) {
+	random.addData(seriesData);
+}
+
+var palette = new Rickshaw.Color.Palette( { scheme: 'classic9' } );
+
+// instantiate our graph!
+
+var graph = new Rickshaw.Graph( {
+	element: document.getElementById("chart1"),
+	width: 900,
+	height: 100,
+	renderer: 'area',
+	stroke: true,
+	preserve: true,
+	series: [
+		{
+			color: palette.color(),
+			data: seriesData[0],
+			name: 'Damien'
+		}
+	]
+} );
+
+var graph2 = new Rickshaw.Graph( {
+	element: document.getElementById("chart2"),
+	width: 900,
+	height: 100,
+	renderer: 'area',
+	stroke: true,
+	preserve: true,
+	series: [
+		{
+			color: palette.color(),
+			data: seriesData[1],
+			name: 'Jumar'
+		}
+	]
+} );
+
+var graph3 = new Rickshaw.Graph( {
+	element: document.getElementById("chart3"),
+	width: 900,
+	height: 100,
+	renderer: 'area',
+	stroke: true,
+	preserve: true,
+	series: [
+		{
+			color: palette.color(),
+			data: seriesData[2],
+			name: 'Jeroen'
+		}
+	]
+} );
+var graph4 = new Rickshaw.Graph( {
+	element: document.getElementById("chart4"),
+	width: 900,
+	height: 100,
+	renderer: 'area',
+	stroke: true,
+	preserve: true,
+	series: [
+		{
+			color: palette.color(),
+			data: seriesData[3],
+			name: 'Anubhooti'
+		}
+	]
+} );
+
+var graph5 = new Rickshaw.Graph( {
+	element: document.getElementById("chart5"),
+	width: 900,
+	height: 200,
+	renderer: 'area',
+	stroke: true,
+	preserve: true,
+	series: [
+		{
+			color: palette.color(),
+			data: seriesData[4],
+			name: 'Wookies'
+		}
+	]
+} );
+
+var graph6 = new Rickshaw.Graph( {
+	element: document.getElementById("chart6"),
+	width: 900,
+	height: 200,
+	renderer: 'area',
+	stroke: true,
+	preserve: true,
+	series: [
+		{
+			color: palette.color(),
+			data: seriesData[5],
+			name: 'Jedis'
+		}
+	]
+} );
+
+graph.render();
+graph2.render();
+graph3.render();
+graph4.render();
+graph5.render();
+graph6.render();
+
+var preview1 = new Rickshaw.Graph.RangeSlider( {
+	graph: graph,
+	element: document.getElementById('preview1'),
+} );
+var preview2 = new Rickshaw.Graph.RangeSlider( {
+	graph: graph2,
+	element: document.getElementById('preview2'),
+} );
+var preview3 = new Rickshaw.Graph.RangeSlider( {
+	graph: graph3,
+	element: document.getElementById('preview3'),
+} );
+var preview4 = new Rickshaw.Graph.RangeSlider( {
+	graph: graph4,
+	element: document.getElementById('preview4'),
+} );
+var preview5 = new Rickshaw.Graph.RangeSlider( {
+	graph: graph5,
+	element: document.getElementById('preview5'),
+} );
+var preview6 = new Rickshaw.Graph.RangeSlider( {
+	graph: graph6,
+	element: document.getElementById('preview6'),
+} );
+
+var hoverDetail1 = new Rickshaw.Graph.HoverDetail( {
+	graph: graph,
+	xFormatter: function(x) {
+		return new Date(x * 1000).toString();
+	}
+} );
+
+var hoverDetail2 = new Rickshaw.Graph.HoverDetail( {
+	graph: graph2,
+	xFormatter: function(x) {
+		return new Date(x * 1000).toString();
+	}
+} );
+
+var hoverDetail3 = new Rickshaw.Graph.HoverDetail( {
+	graph: graph3,
+	xFormatter: function(x) {
+		return new Date(x * 1000).toString();
+	}
+} );
+
+var hoverDetail4 = new Rickshaw.Graph.HoverDetail( {
+	graph: graph4,
+	xFormatter: function(x) {
+		return new Date(x * 1000).toString();
+	}
+} );
+var hoverDetail5 = new Rickshaw.Graph.HoverDetail( {
+	graph: graph5,
+	xFormatter: function(x) {
+		return new Date(x * 1000).toString();
+	}
+} );
+var hoverDetail6 = new Rickshaw.Graph.HoverDetail( {
+	graph: graph6,
+	xFormatter: function(x) {
+		return new Date(x * 1000).toString();
+	}
+} );
+
+var annotator1 = new Rickshaw.Graph.Annotate( {
+	graph: graph,
+	element: document.getElementById('timeline1')
+} );
+
+var annotator2 = new Rickshaw.Graph.Annotate( {
+	graph: graph2,
+	element: document.getElementById('timeline2')
+} );
+
+var annotator3 = new Rickshaw.Graph.Annotate( {
+	graph: graph3,
+	element: document.getElementById('timeline3')
+} );
+
+var annotator4 = new Rickshaw.Graph.Annotate( {
+	graph: graph4,
+	element: document.getElementById('timeline4')
+} );
+
+var annotator5 = new Rickshaw.Graph.Annotate( {
+	graph: graph5,
+	element: document.getElementById('timeline5')
+} );
+
+var annotator6 = new Rickshaw.Graph.Annotate( {
+	graph: graph6,
+	element: document.getElementById('timeline6')
+} );
+
+var legend1 = new Rickshaw.Graph.Legend( {
+	graph: graph,
+	element: document.getElementById('legend1')
+
+} );
+
+var legend2 = new Rickshaw.Graph.Legend( {
+	graph: graph2,
+	element: document.getElementById('legend2')
+
+} );
+
+var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+	graph: graph,
+	legend: legend1
+} );
+
+var order = new Rickshaw.Graph.Behavior.Series.Order( {
+	graph: graph,
+	legend: legend1
+} );
+
+var highlighter = new Rickshaw.Graph.Behavior.Series.Highlight( {
+	graph: graph,
+	legend: legend1
+} );
+var highlighter2 = new Rickshaw.Graph.Behavior.Series.Highlight( {
+	graph: graph2,
+	legend: legend2
+} );
+
+
+var smoother = new Rickshaw.Graph.Smoother( {
+	graph: graph,
+	element: document.querySelector('#smoother')
+} );
+
+var ticksTreatment = 'glow';
+
+var xAxis1 = new Rickshaw.Graph.Axis.Time( {
+	graph: graph,
+	ticksTreatment: ticksTreatment,
+	timeFixture: new Rickshaw.Fixtures.Time.Local()
+} );
+
+var xAxis2 = new Rickshaw.Graph.Axis.Time( {
+	graph: graph2,
+	ticksTreatment: ticksTreatment,
+	timeFixture: new Rickshaw.Fixtures.Time.Local()
+} );
+var xAxis3 = new Rickshaw.Graph.Axis.Time( {
+	graph: graph3,
+	ticksTreatment: ticksTreatment,
+	timeFixture: new Rickshaw.Fixtures.Time.Local()
+} );
+var xAxis4 = new Rickshaw.Graph.Axis.Time( {
+	graph: graph4,
+	ticksTreatment: ticksTreatment,
+	timeFixture: new Rickshaw.Fixtures.Time.Local()
+} );
+var xAxis5 = new Rickshaw.Graph.Axis.Time( {
+	graph: graph5,
+	ticksTreatment: ticksTreatment,
+	timeFixture: new Rickshaw.Fixtures.Time.Local()
+} );
+var xAxis6 = new Rickshaw.Graph.Axis.Time( {
+	graph: graph6,
+	ticksTreatment: ticksTreatment,
+	timeFixture: new Rickshaw.Fixtures.Time.Local()
+} );
+
+xAxis1.render();
+xAxis2.render();
+xAxis3.render();
+xAxis4.render();
+xAxis5.render();
+xAxis6.render();
+
+var yAxis = new Rickshaw.Graph.Axis.Y( {
+	graph: graph,
+	tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+	ticksTreatment: ticksTreatment
+} );
+var yAxis2 = new Rickshaw.Graph.Axis.Y( {
+	graph: graph2,
+	tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+	ticksTreatment: ticksTreatment
+} );
+var yAxis3 = new Rickshaw.Graph.Axis.Y( {
+	graph: graph3,
+	tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+	ticksTreatment: ticksTreatment
+} );
+var yAxis4 = new Rickshaw.Graph.Axis.Y( {
+	graph: graph4,
+	tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+	ticksTreatment: ticksTreatment
+} );
+var yAxis5 = new Rickshaw.Graph.Axis.Y( {
+	graph: graph5,
+	tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+	ticksTreatment: ticksTreatment
+} );
+var yAxis6 = new Rickshaw.Graph.Axis.Y( {
+	graph: graph6,
+	tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+	ticksTreatment: ticksTreatment
+} );
+yAxis.render();
+yAxis2.render();
+yAxis3.render();
+yAxis4.render();
+yAxis5.render();
+yAxis6.render();
+
+
+var controls = new RenderControls( {
+	element: document.querySelector('form'),
+	graph: graph
+} );
+
+// add some data every so often
+
+var messages = [
+	"Changed home page welcome message",
+	"Minified JS and CSS",
+	"Changed button color from blue to green",
+	"Refactored SQL query to use indexed columns",
+	"Added additional logging for debugging",
+	"Fixed typo",
+	"Rewrite conditional logic for clarity",
+	"Added documentation for new methods"
+];
+
+setInterval( function() {
+	random.removeData(seriesData);
+	random.addData(seriesData);
+	graph.update();
+	graph2.update();
+	graph3.update();
+	graph4.update();
+	graph5.update();
+	graph6.update();
+
+}, 3000 );
+
+function addAnnotation(force) {
+	if (messages.length > 0 && (force || Math.random() >= 0.95)) {
+		annotator1.add(seriesData[2][seriesData[2].length-1].x, messages.shift());
+		annotator1.update();
+		annotator2.add(seriesData[2][seriesData[2].length-1].x, messages.shift());
+		annotator2.update();
+		annotator3.add(seriesData[2][seriesData[2].length-1].x, messages.shift());
+		annotator3.update();
+		annotator4.add(seriesData[2][seriesData[2].length-1].x, messages.shift());
+		annotator4.update();
+		annotator5.add(seriesData[2][seriesData[2].length-1].x, messages.shift());
+		annotator5.update();
+		annotator6.add(seriesData[2][seriesData[2].length-1].x, messages.shift());
+		annotator6.update();
+	}
+}
+
+addAnnotation(true);
+setTimeout( function() { setInterval( addAnnotation, 6000 ) }, 6000 );
+
+/*var previewXAxis1 = new Rickshaw.Graph.Axis.Time({
+	graph: preview1.previews[0],
+	timeFixture: new Rickshaw.Fixtures.Time.Local(),
+	ticksTreatment: ticksTreatment
+});
+
+var previewXAxis2 = new Rickshaw.Graph.Axis.Time({
+	graph: preview2.previews[0],
+	timeFixture: new Rickshaw.Fixtures.Time.Local(),
+	ticksTreatment: ticksTreatment
+});
+
+var previewXAxis3 = new Rickshaw.Graph.Axis.Time({
+	graph: preview3.previews[0],
+	timeFixture: new Rickshaw.Fixtures.Time.Local(),
+	ticksTreatment: ticksTreatment
+});
+
+var previewXAxis4 = new Rickshaw.Graph.Axis.Time({
+	graph: preview4.previews[0],
+	timeFixture: new Rickshaw.Fixtures.Time.Local(),
+	ticksTreatment: ticksTreatment
+});
+
+previewXAxis1.render();
+previewXAxis2.render();
+previewXAxis3.render();
+previewXAxis4.render();*/
+
+document.getElementById("btnAll").onclick = function () { 
+	jQuery("#btnAll").hide(1000);	
+	jQuery("#btnDpt").show(1000);
+	jQuery("#btnWook").show(1000);
+	jQuery("#btnJedi").show(1000);
+	jQuery("#individual-graphs-wook").show(1000);	
+	jQuery("#individual-graphs-jedi").show(1000);	
+	jQuery("#department-graphs").hide(1000);	
+};
+
+document.getElementById("btnDpt").onclick = function () { 
+	jQuery("#btnAll").show(1000);	
+	jQuery("#btnDpt").hide(1000);
+	jQuery("#btnWook").show(1000);
+	jQuery("#btnJedi").show(1000);
+	jQuery("#individual-graphs-wook").hide(1000);	
+	jQuery("#individual-graphs-jedi").hide(1000);	
+	jQuery("#department-graphs").show(1000);	
+};
+
+document.getElementById("btnWook").onclick = function () { 
+	jQuery("#btnAll").show(1000);	
+	jQuery("#btnDpt").show(1000);
+	jQuery("#btnWook").hide(1000);
+	jQuery("#btnJedi").hide(1000);
+	jQuery("#individual-graphs-wook").show(1000);	
+	jQuery("#individual-graphs-jedi").hide(1000);	
+	jQuery("#department-graphs").hide(1000);	
+};
+
+document.getElementById("btnJedi").onclick = function () { 
+	jQuery("#btnAll").show(1000);	
+	jQuery("#btnDpt").show(1000);
+	jQuery("#btnWook").hide(1000);
+	jQuery("#btnJedi").hide(1000);
+	jQuery("#individual-graphs-wook").hide(1000);	
+	jQuery("#individual-graphs-jedi").show(1000);	
+	jQuery("#department-graphs").hide(1000);	
+};
+
+</script>
+
+</body>

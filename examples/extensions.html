@@ -1,6 +1,6 @@
 <!doctype html>
 <head>
-	<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
+	<link type="text/css" rel="stylesheet" href="css/jquery-ui.css">
 	<link type="text/css" rel="stylesheet" href="../src/css/graph.css">
 	<link type="text/css" rel="stylesheet" href="../src/css/detail.css">
 	<link type="text/css" rel="stylesheet" href="../src/css/legend.css">
@@ -8,12 +8,14 @@
 
 	<script src="../vendor/d3.v3.js"></script>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script-->
+	<script src="js/jquery-1.11.1.min.js"></script>
 	<script>
 		jQuery.noConflict();
 	</script>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+	
+	<script src="js/jquery-ui.min.js"></script>
 
 	<script src="../src/js/Rickshaw.js"></script>
 	<script src="../src/js/Rickshaw.Class.js"></script>
@@ -52,7 +54,7 @@
 	<form id="side_panel">
 		<h1>Random Data in the Future</h1>
 		<section><div id="legend"></div></section>
-		<section>
+		<!--section>
 			<div id="renderer_form" class="toggler">
 				<input type="radio" name="renderer" id="area" value="area" checked>
 				<label for="area">area</label>
@@ -97,11 +99,8 @@
 					<span>step</span>
 				</label>
 			</div>
-		</section>
-		<section>
-			<h6>Smoothing</h6>
-			<div id="smoother"></div>
-		</section>
+		</section--->
+		
 		<section></section>
 	</form>
 
@@ -112,6 +111,13 @@
 	</div>
 
 </div>
+
+<style>
+.ui-slider-horizontal{
+	display:none;
+}
+
+</style>
 
 <script>
 
